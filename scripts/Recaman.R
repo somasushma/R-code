@@ -1,7 +1,4 @@
 #Recaman sequence
-library(numbers)
-library(pracma)
-library(MASS)
 n=100
 f=rep(0,100)
 f[1]=1
