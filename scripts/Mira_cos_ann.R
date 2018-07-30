@@ -1,6 +1,6 @@
 library("MASS")
 
-fx=function(x) (2+a*x^3+a*x^2+a*x)/(1+x^2)
+fx=function(x) (1+a*x^3+a*x^2+a*x)/(1+x^2)
 angbox=c(
   (3), (4), (5), (6),
   (7), (7/2),(8), (9), 
