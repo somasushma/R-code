@@ -12,8 +12,7 @@ nnary= function(x,y) {
   if(y==0){
     return(0)
   } else {
-    k=y
-    nnary(x,floor(k/x))
-    return(cat(k %% x))
+    nnary(x,floor(y/x))
+    return(cat(y %% x))
   }
 }
