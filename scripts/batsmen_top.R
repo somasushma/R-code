@@ -117,6 +117,7 @@ batsmen <- read_csv("~/R/data_experiments/data/batsmen.csv")
 batsmen=batsmen[,-1]
 batsmen=subset(x = batsmen,subset = !is.na(batsmen$Runs))
 bats2=subset(x = batsmen,subset = batsmen$Runs >= (100))
+bats.test=batsmen[batsmen$type=="Test",]
 
 #all centuries decay law
 par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
@@ -142,9 +143,58 @@ box()
 text(90,30, pos=4, labels = paste("median=", median(batter$SR, na.rm = T)), col="darkblue", cex=1.5)
 
 #scores over career
-j=2
-batter=subset(batsmen, grepl(batsmen$Player,pattern = bname[j]))
+par(mfrow=c(2,3))
+for(j in 1:6){
+batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
 den=density(batter$Runs)
 plot(den, type="n", xlim=c(0, max(den$x)), ylim=c(0,.018), xlab="Runs", main=paste(bname[j], "Per/Inn=", round(sum(batter$Runs)/(length(batter$Runs)-length(which(batter$Notout==T))),2)))
 abline(v=seq(0,400,50), h=seq(0,.02, .005), col="gray", lty=2)
 points(den, type="l", col="red", lwd=2) 
+}
+
+#runs vs balls (strike rate angle) faced as angle
+par(mfrow=c(2,3))
+for(j in 1:6){
+batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
+te=batter[batter$BF>= 75,]
+b=c(max(te$Runs/te$BF, na.rm = T), min(te$Runs/te$BF, na.rm = T))
+m=median(batter$Runs/batter$BF, na.rm = T)
+ang=(atan(b[1])-atan(b[2]))*180/pi
+m.ang=atan(m)*180/pi
+plot(batter$BF, batter$Runs, type="n", xlab="balls", ylab = "runs", main=paste(bname[j], ", ang=",round(ang,2), ", m.ang=", round(m.ang,2)))
+abline(v=seq(0,400,50), h=seq(0,600,50), col="gray", lty=2)
+abline(a=0, b=b[1], col="darkgreen", lwd=2, lty=2)
+abline(a=0, b=b[2], col="darkgreen", lwd=2, lty=2)
+abline(a=0, b=m, col="blueviolet", lwd=2, lty=2)
+points(batter$BF, batter$Runs, pch=16,col="darkred")
+}
+
+#distribution 6s and 4s in centuries/50s
+par(mfrow=c(2,2))
+for(j in c(50, 100, 150, 200)){
+te=bats.test[bats.test$Runs >= j,]
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+a=hist((te$X4s*4+te$X6s*6)/te$Runs, breaks=60, plot = F)
+plot(x=range(a$mids), y=range(a$counts), type ="n", main = paste(" fraction in 4s+6s in scores >=", j), xlab="# of 4s+6s", ylab="frequency")
+abline(v=seq(0,1,.2), h=seq(0,ceiling(max(a$counts)/10^floor(log10(max(a$counts))))*10^floor(log10(max(a$counts))),10^floor(log10(max(a$counts)))/2), col="gray", lwd=2, lty=3)
+hist((te$X4s*4+te$X6s*6)/te$Runs, breaks=60, col=heat.colors(70), add=T)
+}
+
+#century distribution average for innings tests
+te=aggregate(Inns ~ Start.Date+Opposition, data = bats.test, unique) # gets all innings
+#total number of innings
+te=lengths(te$Inns)
+inns=sum(te) 
+
+#count of 100s and probability 100 in an innings
+c100s=length(bats.test$Runs[bats.test$Runs>=100])
+p100s=c100s/inns #probability 100 in an innings
+
+#100s per innings
+bats2=subset(x = bats.test,subset = bats.test$Runs >= (100))
+te=aggregate(Runs ~ Start.Date+Opposition+Inns, data = bats2, length)
+d100s=c((inns-length(te$Runs))/inns, table(te$Runs)/inns)
+
+par(mfrow=c(1,1))
+barplot(d100s, col="red")
+barplot(dpois(0:6, p100s), col = adjustcolor("blue", .3), add = T)
