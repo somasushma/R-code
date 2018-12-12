@@ -116,31 +116,43 @@ library(readr)
 batsmen <- read_csv("~/R/data_experiments/data/batsmen.csv")
 batsmen=batsmen[,-1]
 batsmen=subset(x = batsmen,subset = !is.na(batsmen$Runs))
-bats2=subset(x = batsmen,subset = batsmen$Runs >= (100))
 bats.test=batsmen[batsmen$type=="Test",]
+bats.test=bats.test[,-1]
+bats.test=bats.test[!duplicated(bats.test),]
+bats.test=bats.test[,-c(21,22)]
+bats.test=bats.test[,-c(9,13)]
 
 #all centuries decay law
+bats2=subset(x = bats.test,subset = bats.test$Runs >= (100))
 par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+par(mfrow=c(1,1))
 te=hist(bats2$Runs, breaks=100, xlab="100s", main = "histogram of all scores >=100", col = topo.colors(101), xaxt="n")
 axis(1, at=seq(0,400,50))
 box()
 
 ye=cbind(te$counts, te$mids)
 ye=ye[ye[,1] != 0,]
-reg3=lm(log10(ye[,1]) ~ log10(ye[,2]))
-curve(10^reg3$coefficients[1]*x^(reg3$coefficients[2]), from = 100,to=400, col="darkred", lwd=2, lty=2, add = T)
-text(x=250,y=600, labels = expression(paste("y= k",x^a)), cex=3, col="darkred")
-text(x=250,y=400, labels = paste("k= ",formatC(10^reg3$coefficients[1]), "; a= ", round(reg3$coefficients[2], 2)), cex=2, col="darkred")
+reg3=lm(log10(ye[,1]) ~ (ye[,2]))
+reg4=lm(log10(ye[,1]) ~ log10(ye[,2]))
+curve(10^reg3$coefficients[1]*10^(reg3$coefficients[2]*x), from = 100,to=400, col="darkred", lwd=2, lty=2, add = T)
+curve(10^reg4$coefficients[1]*x^(reg4$coefficients[2]), from = 100,to=400, col="darkgreen", lwd=2, lty=2, add = T)
+text(x=250,y=600, labels = expression(paste("y= k",10^(ax))), cex=3, col="darkred")
+text(x=250,y=450, labels = paste("k= ",formatC(10^reg3$coefficients[1]), "; a= ", round(reg3$coefficients[2], 2)), cex=2, col="darkred")
+curve(10^reg4$coefficients[1]*x^(reg4$coefficients[2]), from = 100,to=400, col="darkgreen", lwd=2, lty=2, add = T)
+text(x=250,y=300, labels = expression(paste("y= k",x^a)), cex=3, col="darkgreen")
+text(x=250,y=150, labels = paste("k= ",formatC(10^reg4$coefficients[1]), "; a= ", round(reg4$coefficients[2], 2)), cex=2, col="darkgreen")
 
 #strikerate over career
 bname=c("Sehwag", "Tendulkar", "Dravid", "Laxman", "Kohli", "Ganguly")
+par(mfrow=c(2,3))
+for(j in 1:6){
+batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
+batter=batter[batter$Runs>0,]
 
-j=6
-batter=subset(batsmen, grepl(batsmen$Player,pattern = bname[j]))
-
-hist(batter$SR, breaks =30, col=terrain.colors(31), xlab="strike rate", main=bname[j])
+hist(batter$SR, breaks =30, col=terrain.colors(31), xlab="strike rate", main=paste(bname[j], "; mean=", round(mean(batter$SR, na.rm = T),1)))
+abline(v=mean(batter$SR, na.rm = T), col="darkblue", lwd=2, lty=2)
 box()
-text(90,30, pos=4, labels = paste("median=", median(batter$SR, na.rm = T)), col="darkblue", cex=1.5)
+}
 
 #scores over career
 par(mfrow=c(2,3))
@@ -156,7 +168,7 @@ points(den, type="l", col="red", lwd=2)
 par(mfrow=c(2,3))
 for(j in 1:6){
 batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
-te=batter[batter$BF>= 75,]
+te=batter[batter$BF>= 50,]
 b=c(max(te$Runs/te$BF, na.rm = T), min(te$Runs/te$BF, na.rm = T))
 m=median(batter$Runs/batter$BF, na.rm = T)
 ang=(atan(b[1])-atan(b[2]))*180/pi
@@ -178,9 +190,10 @@ a=hist((te$X4s*4+te$X6s*6)/te$Runs, breaks=60, plot = F)
 plot(x=range(a$mids), y=range(a$counts), type ="n", main = paste(" fraction in 4s+6s in scores >=", j), xlab="# of 4s+6s", ylab="frequency")
 abline(v=seq(0,1,.2), h=seq(0,ceiling(max(a$counts)/10^floor(log10(max(a$counts))))*10^floor(log10(max(a$counts))),10^floor(log10(max(a$counts)))/2), col="gray", lwd=2, lty=3)
 hist((te$X4s*4+te$X6s*6)/te$Runs, breaks=60, col=heat.colors(70), add=T)
+abline(v=mean((te$X4s*4+te$X6s*6)/te$Runs, na.rm = T), col="darkblue", lwd=2)
 }
 
-#century distribution average for innings tests
+#average number of centuries for innings tests
 te=aggregate(Inns ~ Start.Date+Opposition, data = bats.test, unique) # gets all innings
 #total number of innings
 te=lengths(te$Inns)
@@ -194,7 +207,47 @@ p100s=c100s/inns #probability 100 in an innings
 bats2=subset(x = bats.test,subset = bats.test$Runs >= (100))
 te=aggregate(Runs ~ Start.Date+Opposition+Inns, data = bats2, length)
 d100s=c((inns-length(te$Runs))/inns, table(te$Runs)/inns)
+names(d100s)=0:5
 
 par(mfrow=c(1,1))
-barplot(d100s, col="red")
-barplot(dpois(0:6, p100s), col = adjustcolor("blue", .3), add = T)
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+barplot(d100s, col="lightblue", main = "Fraction of innings with n 100s")
+barplot(dpois(0:5, p100s), density = 10, angle =45, col="black", add = T) #compare with Poisson distribution
+text(4,.4, labels = substitute(paste(lambda, "=", p), list(p=round(p100s,3))), cex=2.5)
+box()
+
+#Distribution of runs scored by bat in an innings
+te=aggregate(Runs ~ Start.Date+Opposition+Inns, data = bats.test, sum)
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+hist(te$Runs, breaks=100, col=heat.colors(110), xlab="score", main = paste("histogram of score/innings; ", "median= ", median(te$Runs)))
+abline(v=median(te$Runs), col="darkblue", lwd=2)
+box()
+
+#Distribution of fours in innings
+te=bats.test[-is.na(bats.test$X4s),]
+fours=aggregate(X4s ~ Start.Date+Opposition+Inns, data = te, sum)
+fours=fours[fours$X4s>0,]
+
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+hist(fours$X4s, breaks=100, col=heat.colors(110), xlab = "# of fours", main = paste("histogram of fours/innings; ", "median= ", median(fours$X4s)))
+abline(v=median(fours$X4s), col="darkblue", lwd=2)
+box()
+
+#Distribution of sixes in innings
+te=bats.test[-is.na(bats.test$X6s),]
+sixes=aggregate(X6s ~ Start.Date+Opposition+Inns, data = te, sum)
+d6s=table(sixes$X6s)/length(sixes$Inns)
+p6s=sum(sixes$X6s)/length(sixes$Inns)
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+barplot(d6s, col=heat.colors(23), xlab = "# of sixes", main = "fraction of inns with n sixes")
+box()
+
+#mean strike rate distribution distributions
+te=bats.test[bats.test$Runs>20,]
+te=te[-is.na(te$SR),]
+sr=aggregate(SR ~ Player, data = te, mean)
+sr=sr[order(sr$SR, decreasing = T),]
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+hist(sr$SR, breaks = 50, xlim=c(20,150), col=heat.colors(53), xlab = "mean strike rate of a batsman", main = paste("histogram of mean strike rate of a batsman; ", "median= ", round(median(sr$SR),2)))
+abline(v=median(sr$SR), col="darkblue", lwd=2)
+box()
