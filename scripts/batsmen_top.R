@@ -224,7 +224,8 @@ abline(v=median(te$Runs), col="darkblue", lwd=2)
 box()
 
 #Distribution of fours in innings
-te=bats.test[-is.na(bats.test$X4s),]
+bats.test$X4s=as.numeric(bats.test$X4s)
+te=bats.test[!is.na(bats.test$X4s),]
 fours=aggregate(X4s ~ Start.Date+Opposition+Inns, data = te, sum)
 fours=fours[fours$X4s>0,]
 
@@ -243,11 +244,23 @@ barplot(d6s, col=heat.colors(23), xlab = "# of sixes", main = "fraction of inns 
 box()
 
 #mean strike rate distribution distributions
-te=bats.test[bats.test$Runs>20,]
+te=bats.test[bats.test$Runs>10,]
 te=te[-is.na(te$SR),]
 sr=aggregate(SR ~ Player, data = te, mean)
 sr=sr[order(sr$SR, decreasing = T),]
 par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
-hist(sr$SR, breaks = 50, xlim=c(20,150), col=heat.colors(53), xlab = "mean strike rate of a batsman", main = paste("histogram of mean strike rate of a batsman; ", "median= ", round(median(sr$SR),2)))
+hist(sr$SR, breaks = 50, xlim=c(0,150), col=heat.colors(53), xlab = "mean strike rate of a batsman", main = paste("histogram of mean strike rate of a batsman; ", "median= ", round(median(sr$SR),2)))
 abline(v=median(sr$SR), col="darkblue", lwd=2)
 box()
+
+#innings score distribution
+par(mfrow=c(2,2))
+for(j in 1:4){
+te=bats.test[bats.test$Inns==j,]
+te=aggregate(Runs ~ Start.Date+Opposition, data = te, sum)
+par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
+hist(te$Runs, breaks=100, col=heat.colors(110), xlab="score", main = paste("histogram of score/innings:",j , "median= ", median(te$Runs)))
+abline(v=median(te$Runs), col="darkblue", lwd=2)
+box()
+}
+
