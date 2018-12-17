@@ -23,6 +23,7 @@ abline(reg1, col="gray40", lwd=2.5,lty=2)
 
 text(x=50, y=20,labels = paste("r-sq=", round(summary(reg1)$r.squared,2)), col="blue", cex=1.5)
 # text(x=50, y=15,labels = paste("100s/50s slope=", round(summary(reg1)$coefficients[2],2)), col="blue", cex=1.5)
+
 #100s/50s histogram
 hist(bats$`100s`/bats$`50s`, breaks=15, xlab="100s/50s", main = "histogram of 100s/50s ratio", col = topo.colors(10))
 axis(1, at=seq(0,max(bats$`100s`/bats$`50s`),.25))
@@ -95,21 +96,44 @@ colnames(bats1)=te
 bats1$Player=gsub(bats1$Player,pattern = "ICC\\/",replacement = "")
 
 #PCA
-bats1.pca=prcomp(bats1[,c(5:8, 10:13)], center = T, scale. = T)
+bats1.pca=prcomp(bats1[,c(7:8, 10:12)], center = T, scale. = T)
 bats1.pc.pred=predict(bats1.pca)
 
-bats1[which(bats1.pc.pred[,1]> (3) & bats1.pc.pred[,2] > (-5)),"Player"]
+te=bats1[which(bats1.pc.pred[,1]< (-2.3) & bats1.pc.pred[,2] > (-5)),"Player"]
+cat(sapply(1:length(te), function(x) paste(x, ". ", te[x], ";", sep = ""))) #alphabetical list
 
-paste(sort(bats1[which(bats1.pc.pred[,1]> (3) & bats1.pc.pred[,2] > (-2)),"Player"]), collapse=", ") #alphabetical list
+mean(bats1[which(bats1.pc.pred[,1]> (3) & bats1.pc.pred[,2] > (-5)),"Ave"]) #mean average
+mean(bats1[which(bats1.pc.pred[,1]> (3) & bats1.pc.pred[,2] > (-5)),"Runs"]) #mean career runs
+mean(bats1[which(bats1.pc.pred[,1]> (3) & bats1.pc.pred[,2] > (-5)),"SR"]) #mean career SR
+
+
 #plotting PCA
 par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
-j=1; k=5
+j=1; k=2
 plot(bats1.pc.pred[,j], bats1.pc.pred[,k], xlab=paste("PCA",j), ylab=paste("PCA",k), pch=16, col="gray35", main = "301 best Test batsmen")
-abline(v=c(-3,0), h=c(-1), col="gray25", lwd=2, lty=2)
+abline(v=c(-2.3,0), h=c(0), col="gray25", lwd=2, lty=2)
 
-points(bats1.pc.pred[which(bats1.pc.pred[,j]< (-3) & bats1.pc.pred[,k] > (-1)),j], bats1.pc.pred[which(bats1.pc.pred[,j]< (-3) & bats1.pc.pred[,k] > (-1)),k], pch=16, col="red")
+points(bats1.pc.pred[which(bats1.pc.pred[,j]< (-2.3) & bats1.pc.pred[,k] > (-5)),j], bats1.pc.pred[which(bats1.pc.pred[,j]< (-2.3) & bats1.pc.pred[,k] > (-5)),k], pch=16, col="red")
 
-points(bats1.pc.pred[which(bats1.pc.pred[,j]< (-3) & bats1.pc.pred[,k] < (-1)),j], bats1.pc.pred[which(bats1.pc.pred[,j]< (-3) & bats1.pc.pred[,k] < (-1)),k], pch=16, col="darkgreen")
+points(bats1.pc.pred[ grep(bats1$Player, pattern = "Kapil Dev"),1], bats1.pc.pred[ grep(bats1$Player, pattern = "Kapil Dev"),2], pch="O", cex=1.5, col="blue")
+
+#hist averages 301
+hist(bats1$Ave, breaks=50, xlab="Average", main = "histogram of Average for top 301 batsmen", col = topo.colors(31), xaxt="n")
+axis(1, at=seq(0,100,5))
+abline(v=median(bats1$Ave), col="darkblue", lwd=2.5, lty=3)
+text(x=60, y=22,labels = paste("median=", round(median(bats1$Ave),2)), pos=4, col="red", cex=1.5)
+text(x=60, y=15,labels = paste("p(Bradman)=", formatC(pnorm(q = bats1[which(bats1$Player=="DG Bradman (AUS)"),"Ave"], mean = mean(bats1$Ave), sd = sd(bats1$Ave), lower.tail = F))), pos=4, col="red", cex=1.5)
+box()
+
+#hist strike rate 301
+hist(bats1$SR, breaks=50, xlab="SR", main = "histogram of strike rate for top 301 batsmen", col = topo.colors(50), xaxt="n")
+axis(1, at=seq(0,100,5))
+abline(v=median(bats1$SR), col="darkblue", lwd=2.5, lty=3)
+text(x=50, y=30,labels = paste("median=", round(median(bats1$SR),2)), pos=4, col="red", cex=1.5)
+abline(v=bats1[grepl(pattern = "Sehwag", bats1$Player),]$SR, col="darkred", lwd=2.5, lty=3)
+text(x=75, y=20,labels = "Sehwag", col="red", cex=1.5)
+text(x=60, y=18,labels = paste("p=", formatC(pnorm(q = bats1[grepl(pattern = "Sehwag", bats1$Player),"SR"], mean = mean(bats1$SR), sd = sd(bats1$SR), lower.tail = F))), pos=4, col="red", cex=1.5)
+box()
 
 #-----------
 library(readr)
@@ -126,33 +150,20 @@ bats.test=bats.test[,-c(9,13)]
 bats2=subset(x = bats.test,subset = bats.test$Runs >= (100))
 par(mar=c(3,3,2,1), mgp=c(1.2,.5, 0))
 par(mfrow=c(1,1))
-te=hist(bats2$Runs, breaks=100, xlab="100s", main = "histogram of all scores >=100", col = topo.colors(101), xaxt="n")
+te=hist(bats2$Runs, breaks=100, xlab="100s", main = "histogram of all scores >=100", col = terrain.colors(101), xaxt="n")
 axis(1, at=seq(0,400,50))
 box()
 
 ye=cbind(te$counts, te$mids)
 ye=ye[ye[,1] != 0,]
-reg3=lm(log10(ye[,1]) ~ (ye[,2]))
-reg4=lm(log10(ye[,1]) ~ log10(ye[,2]))
+reg3=glm(log10(ye[,1]) ~ (ye[,2]))
+reg4=glm(log10(ye[,1]) ~ log10(ye[,2]))
 curve(10^reg3$coefficients[1]*10^(reg3$coefficients[2]*x), from = 100,to=400, col="darkred", lwd=2, lty=2, add = T)
-curve(10^reg4$coefficients[1]*x^(reg4$coefficients[2]), from = 100,to=400, col="darkgreen", lwd=2, lty=2, add = T)
 text(x=250,y=600, labels = expression(paste("y= k",10^(ax))), cex=3, col="darkred")
 text(x=250,y=450, labels = paste("k= ",formatC(10^reg3$coefficients[1]), "; a= ", round(reg3$coefficients[2], 2)), cex=2, col="darkred")
-curve(10^reg4$coefficients[1]*x^(reg4$coefficients[2]), from = 100,to=400, col="darkgreen", lwd=2, lty=2, add = T)
-text(x=250,y=300, labels = expression(paste("y= k",x^a)), cex=3, col="darkgreen")
-text(x=250,y=150, labels = paste("k= ",formatC(10^reg4$coefficients[1]), "; a= ", round(reg4$coefficients[2], 2)), cex=2, col="darkgreen")
-
-#strikerate over career
-bname=c("Sehwag", "Tendulkar", "Dravid", "Laxman", "Kohli", "Ganguly")
-par(mfrow=c(2,3))
-for(j in 1:6){
-batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
-batter=batter[batter$Runs>0,]
-
-hist(batter$SR, breaks =30, col=terrain.colors(31), xlab="strike rate", main=paste(bname[j], "; mean=", round(mean(batter$SR, na.rm = T),1)))
-abline(v=mean(batter$SR, na.rm = T), col="darkblue", lwd=2, lty=2)
-box()
-}
+curve(10^reg4$coefficients[1]*x^(reg4$coefficients[2]), from = 100,to=400, col="darkblue", lwd=2, lty=2, add = T)
+text(x=250,y=300, labels = expression(paste("y= k",x^a)), cex=3, col="darkblue")
+text(x=250,y=150, labels = paste("k= ",formatC(10^reg4$coefficients[1]), "; a= ", round(reg4$coefficients[2], 2)), cex=2, col="darkblue")
 
 #scores over career
 par(mfrow=c(2,3))
@@ -162,6 +173,18 @@ den=density(batter$Runs)
 plot(den, type="n", xlim=c(0, max(den$x)), ylim=c(0,.018), xlab="Runs", main=paste(bname[j], "Per/Inn=", round(sum(batter$Runs)/(length(batter$Runs)-length(which(batter$Notout==T))),2)))
 abline(v=seq(0,400,50), h=seq(0,.02, .005), col="gray", lty=2)
 points(den, type="l", col="red", lwd=2) 
+}
+
+#strikerate over career
+bname=c("Sehwag", "Tendulkar", "Dravid", "Laxman", "Kohli", "Ganguly")
+par(mfrow=c(2,3))
+for(j in 1:6){
+  batter=subset(bats.test, grepl(bats.test$Player,pattern = bname[j]))
+  batter=batter[batter$Runs>0,]
+  
+  hist(batter$SR, breaks =30, col=terrain.colors(31), xlab="strike rate", main=paste(bname[j], "; mean=", round(mean(batter$SR, na.rm = T),1)))
+  abline(v=mean(batter$SR, na.rm = T), col="darkblue", lwd=2, lty=2)
+  box()
 }
 
 #runs vs balls (strike rate angle) faced as angle
