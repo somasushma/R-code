@@ -1,5 +1,8 @@
+#constants
+phi=(sqrt(5)-1)/2
+rroot2=1/sqrt(2)
 #---------
-#defining function fails
+#defining functions
 fun.list= vector(mode = "list", 12)   
 fun.list[["f1.1"]]= function(x,y){
   a[1]+ a[2]*x +a[3]*sqrt(abs(x)) + a[4]*x^3 +y
@@ -68,7 +71,7 @@ par(mfrow=c(5,5))
 n=2000
 m=1000
 l=0
-maxl=25
+maxl=50
 amat=vector(mode = "list", maxl)
 
 while(l < maxl) {
@@ -77,8 +80,8 @@ while(l < maxl) {
   # b=round(runif(n = 1, min = 4, max = 12),0)
   a=runif(6, min=-1.01, max = 1.01)
   
-  xn=0.1
-  yn=0.1
+  xn=.3*cos(pi/4)
+  yn=.3*sin(pi/4)
   ep=.0000001
   xm=xn+ep
   ym=xn+ep
@@ -119,7 +122,7 @@ while(l < maxl) {
 }
 
 #blow up selected------------
-for (cnt in 1:25) {
+for (cnt in 1:50) {
 a=amat[[cnt]]
 n=2000
 m=200
@@ -127,8 +130,8 @@ m=200
 # xbox=Re(te)
 # ybox=Im(te)
 t=seq(0,(2*pi-2*pi/m), 2*pi/m)
-xbox=cos(t)*0.1414214
-ybox=sin(t)*0.1414214
+xbox=.3*cos(t)
+ybox=.3*sin(t)
 
 pm=array(data=NA, dim = c(n*m,3))
 
@@ -152,12 +155,15 @@ for (k in 1:m) {
     
   }
 }
- col=c("#67001f","#b2182b","#d6604d","#f4a582","#fddbc7", "#ffffff","#e0e0e0", "#bababa","#878787","#4d4d4d", "#1a1a1a")
-# col=c("#a50026","#d73027","#f46d43","#fdae61","#fee090","#ffffbf","#e0f3f8","#abd9e9","#74add1","#4575b4","#313695")
+
+# col=c("#67001f","#b2182b","#d6604d","#f4a582","#fddbc7", "#ffffff","#e0e0e0", "#bababa","#878787","#4d4d4d", "#1a1a1a") #default red
+# col=c("#543005","#8c510a", "#bf812d", "#dfc27d","#f6e8c3","#f5f5f5",  "#c7eae5","#80cdc1","#35978f",  "#01665e", "#003c30") #green blue
+
+col=c("#40004b","#762a83","#9970ab","#c2a5cf","#e7d4e8","#f7f7f7","#d9f0d3","#a6dba0","#5aae61","#1b7837","#00441b") #green blue violet
       
 # col=c("#a6cee3", "#1f78b4", "#b2df8a", "#33a02c", "#fb9a99","#e31a1c",  "#fdbf6f","#ff7f00","#cab2d6", "#6a3d9a","#ffff99")
 # col=rainbow(11)
-png(filename = paste("~/R/Figures3/cubic_abs_ham/ham_abs_1_",sprintf("%04d", cnt), ".png", sep = ""),width = 1200,height = 1200)
+png(filename = paste("~/R/Figures3/cubic_abs_ham/Lz_abs_1_",sprintf("%04d", cnt), ".png", sep = ""),width = 1200,height = 1200)
 par(mfrow=c(1,1), pty="s", mar=c(2,2,2,1), mgp=c(1.1,.5,0))
 plot(x=pm[1:s,1], y=pm[1:s,2], pch=16, cex=.2, main="", xlab = "x", ylab = "y", col=col[(pm[,3]) %% 11])
 dev.off()
