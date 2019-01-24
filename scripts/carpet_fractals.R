@@ -11,11 +11,15 @@ rule.list$boxdot0=c(0,0,0,0,1,0,0,0,0)
 rule.list$boxdot1=c(1,1,1,1,0,1,1,1,1)
 rule.list$sq3_0=c(0,0,0,1,0,1,0,0,0)
 rule.list$sq3_1=c(1,0,1,0,1,0,1,0,1)
+rule.list$twist0=c(0,1,0,0,1,0,0,1,0)
+rule.list$twist1=c(1,0,0,1,1,1,0,0,1)
+rule.list$hexad0=c(1,1,0,1,0,1,0,1,1)
+rule.list$hexad1=c(0,0,0,0,1,0,0,0,0)
 
-rule.list$var0=c(0,1,0,0,1,0,0,1,0)
-rule.list$var1=c(1,0,0,1,1,1,0,0,1)
+rule.list$var0=c(0,0,0,0,1,1,1,0,0)
+rule.list$var1=c(1,1,1,1,1,1,0,1,1)
 
-ini=c(0)
+ini=c(1)
 n=5
 for (j in 1:n) {
   mlist=as.list(ini)
@@ -30,4 +34,4 @@ for (j in 1:n) {
 }
 par(pty="s", mar=c(.5,.5,.5,.5))
 image(mlist1, asp=1, col=c("darkblue", "darkturquoise"), axes=F)
-#image(mlist1, asp=1, col=c("white", "black"), axes=F)
+# image(mlist1, asp=1, col=c("darkred", "gainsboro"), axes=F)
