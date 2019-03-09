@@ -1,11 +1,11 @@
 phi=1/2+sqrt(5)/2
-rlist=list(r3=1/2, r4=sqrt(2)-1, r5=1-1/phi, r6=1/3, r7=cos(2*pi/7)/2, r8=1-1/sqrt(2), r9=2-sqrt(3))
+rlist=list(r3=1/2, r4=sqrt(2)-1, r5=1-1/phi, r6=1/3, r7=.3077, r8=1-1/sqrt(2), r9=.2605, r10=2*phi-3)
 
 n=100000
-m=7
+m=10
 zm=polyroot(c(1,rep(0,(m-1)),1))
 z0=0+0i
-r=.3077
+r=rlist$r10
 zbox=rep(NA,n)
 z=z0
 for(j in 1:n) {
