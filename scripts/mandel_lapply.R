@@ -18,6 +18,7 @@ col.list$gray=gray.colors
 col.list$CyBldrBl=colorRampPalette(c("cyan2", "black","darkblue"))
 col.list$TudrOldrBl=colorRampPalette(c("darkturquoise", "darkred","darkblue"))
 col.list$WOdR=colorRampPalette(c("white","orange","darkred"))
+col.list$BGW=colorRampPalette(c("white","gray15","black"))
 col.list$dyad=c("black", "white")
 
 mandel=function(z, n, c){
@@ -30,12 +31,12 @@ mandel=function(z, n, c){
   return(j)
 }
 
-fz=f.list$julpow2_inv1
-col=col.list$TudrOldrBl
+fz=f.list$julpow2_inv2
+col=col.list$BGW
 n=100
-z=0.12
-b=.2
-dv=.0001
+z=.5
+b=.4
+dv=.00025
 cbox= as.vector(outer(X = seq(-b,b,dv), Y = seq(-b,b,dv)*1i,FUN = "+"))
 cm=sapply(cbox, function(c) mandel(z, n, c))
 
