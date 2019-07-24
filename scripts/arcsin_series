@@ -1,0 +1,12 @@
+phi=1/2+sqrt(5)/2
+n=10
+10*sum(sapply(0:n, function(x) (base::factorial(2*x)*(1/(2*phi))^(2*x+1))/((2*x+1)*(2^x*base::factorial(x))^2)))
+10*sum(sapply(0:n, function(x) base::factorial(2*x)/((2*x+1)*2^(4*x+1)*(base::factorial(x))^2*phi^(2*x+1))))
+
+library("Rmpfr")
+prec=500
+n=100
+
+phi=(mpfr(1,prec)+sqrt(mpfr(5,prec)))/mpfr(2,prec)
+
+mpfr(10,prec)*sum(sapplyMpfr(0:n, function(x) factorial(mpfr(2,prec)*mpfr(x,prec))/((mpfr(2,prec)*mpfr(x,prec)+mpfr(1,prec))*mpfr(2,prec)^(mpfr(4,prec)*mpfr(x,prec)+mpfr(1,prec))*(factorial(mpfr(x,prec)))^mpfr(2,prec)*phi^(mpfr(2,prec)*mpfr(x,prec)+mpfr(1,prec)))))
