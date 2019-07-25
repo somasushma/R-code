@@ -10,3 +10,16 @@ n=100
 phi=(mpfr(1,prec)+sqrt(mpfr(5,prec)))/mpfr(2,prec)
 
 mpfr(10,prec)*sum(sapplyMpfr(0:n, function(x) factorial(mpfr(2,prec)*mpfr(x,prec))/((mpfr(2,prec)*mpfr(x,prec)+mpfr(1,prec))*mpfr(2,prec)^(mpfr(4,prec)*mpfr(x,prec)+mpfr(1,prec))*(factorial(mpfr(x,prec)))^mpfr(2,prec)*phi^(mpfr(2,prec)*mpfr(x,prec)+mpfr(1,prec)))))
+
+#with half
+mpfr(6,prec)*sum(sapplyMpfr(0:n, function(x) factorial(mpfr(2,prec)*mpfr(x,prec))/((mpfr(2,prec)*mpfr(x,prec)+mpfr(1,prec))*mpfr(2,prec)^(mpfr(4,prec)*mpfr(x,prec)+mpfr(1,prec))*(factorial(mpfr(x,prec)))^mpfr(2,prec))))
+
+#nambu series related to arctan
+#sqrt(3) nambutiri series; reasonably fast
+n=100
+sum(sapplyMpfr(1:n, function(x) mpfr(-1,prec)^(mpfr(x,prec)-mpfr(1,prec))*mpfr(2,prec)*sqrt(mpfr(3,prec))/(mpfr(3,prec)^(mpfr(x,prec)-mpfr(1,prec))*(mpfr(2,prec)*mpfr(x,prec)-mpfr(1,prec)))))
+
+#super slow nambutiri series
+n=1000
+8*sum(sapply(1:n, function(x) 1/((2*(2*x-1))^2-1)))
+4-8*sum(sapply(1:n, function(x) 1/((4*x)^2-1)))
