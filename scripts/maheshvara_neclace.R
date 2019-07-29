@@ -14,11 +14,43 @@ sapply(s, function(x) format(pow.bigz(x,2))) #square x
 fs=lapply(1:n, function(x) factorize(s[x]))
 fs=lapply(fs, format)
 
-#examine factors
+#examine factors------------
+te=log(unlist(lapply(fs, function(x) max(as.numeric(x)))))
+plot(te, pch=16 )
+abline(a = log(7), b=2)
+#reading big list of above
+library(readr)
+maheshvara_pearls <- read_csv("~/cutting_block/R/figures/maheshvara_pearls.csv", 
+                              col_names = FALSE)
+te=log(as.vector(maheshvara_pearls$X2))
+plot(te, pch=16 )
+abline(a = 0, b=2.2)
+abline(a = 0, b=1/2.3)
+
+
 te=sort(table(unlist(fs)), decreasing = T)
 knitr::kable(te,format = "pandoc")
 
-which(unlist(lapply(1:n, function(x) 909091 %in% fs[[x]])))
+which(unlist(lapply(1:n, function(x) "5882353" %in% fs[[x]])))
+
+forlist=list()
+forlist$`11`=function(x) 2*x+1
+forlist$`101`=function(x) 4*x+2
+forlist$`13`=function(x) 6*x+3
+forlist$`7`=function(x) 6*x+3
+forlist$`73`=function(x) 8*x+4
+forlist$`137`=function(x) 8*x+4
+forlist$`9091`=function(x) 10*x+5
+forlist$`9901`=function(x) 12*x+6
+forlist$`909091`=function(x) 14*x+7
+forlist$`17`=function(x) 16*x+8
+forlist$`5882353`=function(x) 16*x+8
+forlist$`19`=function(x) 18*x+9
+forlist$`52579`=function(x) 18*x+9
+forlist$`3541`=function(x) 20*x+10
+forlist$`27961`=function(x) 20*x+10
+
+
 
 #factor network--------------
 l=lengths(fs)
@@ -54,3 +86,5 @@ E(g)$color=col(10)[e.w]
 tkplot(g, layout=norm_coords(layout_components(g,layout = layout_with_kk), xmin=1, xmax=10, ymin=1, ymax=10), vertex.frame.color=NA, vertex.label.color="black", vertex.label.dist=1)
 
 plot.igraph(g, layout=norm_coords(layout_components(g,layout = layout_with_fr),xmin = 1,xmax = 20, ymin = 1,ymax = 15))
+
+
