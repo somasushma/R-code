@@ -4,8 +4,8 @@ windowsFonts(Skt1=windowsFont("Siddhanta"))
 
 e=exp(1)
 
-kAla="-2999 : 1 : 16; 13: 24" #enter time for time stamp
-prec.angle=0 #give in radians with respect to kR^ittikA 0 points
+kAla="-3000 : 1 : 26; 19: 36" #enter time for time stamp
+prec.angle=2*pi/27 #give in radians with respect to kR^ittikA 0 points
 
 # equal division with abhijit or not
 w.abh=F
@@ -30,8 +30,8 @@ x=225+38/60+(51/60)/60
 y=222+52/60+(10/60)/60
 abh=e^(1i*(tbox[j]+(x-y)*pi/180))
 
-moon=(99+44/60)*pi/180 #ecliptic longitude of Moon
-sun=(279+3/60)*pi/180 #ecliptic longitude of Sun
+moon=(104+29/60)*pi/180 #ecliptic longitude of Moon
+sun=(283+34/60)*pi/180 #ecliptic longitude of Sun
 
 #moon phases: #1= new; 2=wax.cres; 3= 1st quarter; 4= wax.gibbous; 5= full; 6= wan.gibbous; 7= 2nd quarter; 8= wan.cresent
 m.phase=5 
@@ -43,7 +43,7 @@ par(pty="m", mar=c(.5,1,.5,1), mgp=c(1.1,.3,0))
 plot(zcircle, type = "l", col="cyan4", xlim=c(-2,2), ylim = c(-2.2,2.2), asp = 1, axes = F, xlab = "", ylab = "")
 points(0,0)
 
-z.point=head(which(tbox==min(abs(tbox))),1)#find zero point
+z.point=head(which((abs(tbox) %% (2*pi))==min((abs(tbox) %% (2*pi)))),1)#find zero point
 points(z0[-z.point], pch=8, col="darkred")
 
 points(z0[z.point], pch=8, col="darkblue", cex=1.25) #mark zero point
@@ -60,5 +60,5 @@ points(abh, pch=16, cex=.8, col="deepskyblue4") #abhijit
 sapply(0:26, function(x)   {if(t*x*180/pi>90) pos=2 else pos=4; text(nakShatra[x+1],x=Re(zlab[x+1]), y=Im(zlab[x+1]), adj = 0, srt=tbox[x+1]*180/pi, family="Skt1")})
 mtext(kAla, side =2,  cex=1)
 
-dev.copy(png, file="~/R/Dataexperiments/Figs/phAlgunIfull2299BCE.png", units="in", res=600, width=8, height=8)
+dev.copy(png, file="~/R/Dataexperiments/Figs/arjunifull3000BCE.png", units="in", res=600, width=8, height=8)
 dev.off()
