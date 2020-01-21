@@ -1,6 +1,9 @@
-cbrt=function(x) x^(1/3)
+#cube difference-----------
+library(pander)
 
-te=sapply(1:10000, function(x) 3*x^2+3*x+1)
+cbrt=function(x) x^(1/3) #define cuberoot function
+
+te=sapply(1:20000, function(x) 3*x^2+3*x+1)
 ye=list()
 for (j in 1:length(te)) {
   ye[[j]]=te[j]-(1:floor(te[j]^(1/3)))^3
@@ -14,7 +17,25 @@ pander(cbind(cb.diff, unlist(lapply(cbrts, function(x) paste(x, collapse = ", ")
 
 cbind(table(unlist(cbrts)))
 
-#hexagonal spiral
+te=list()
+l=1
+for(j in 1:length(cbrts)){
+  if(length(cbrts[[j]])>2){
+  te[[l]]=c(cbrts[[j]][1], cbrts[[j]][4])
+  l=l+1
+  te[[l]]=c(cbrts[[j]][2], cbrts[[j]][3])
+  l=l+1
+  } else {
+    te[[l]]=c(cbrts[[j]][1], cbrts[[j]][2])
+    l=l+1
+    }
+  }
+te=do.call("rbind", te)
+
+par(pty="m", mar=c(2,2,2,1), mgp=c(1.1, .3, 0))
+plot(te, pch=16, col="dodgerblue4")
+
+#hexagonal spiral--------
 e=exp(1)
 n=5
 rots=vector(mode="list", length = n)
