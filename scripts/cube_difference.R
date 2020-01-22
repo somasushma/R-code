@@ -3,7 +3,7 @@ library(pander)
 
 cbrt=function(x) x^(1/3) #define cuberoot function
 
-te=sapply(1:20000, function(x) 3*x^2+3*x+1)
+te=sapply(1:90000, function(x) 3*x^2+3*x+1)
 ye=list()
 for (j in 1:length(te)) {
   ye[[j]]=te[j]-(1:floor(te[j]^(1/3)))^3
@@ -13,9 +13,9 @@ cb.diff=which(unlist(lapply(ye, function(x) any(round(x^(1/3)-round(x^(1/3),0), 
 te=ye[cb.diff]
 cbrts=lapply(1:length(te), function(x) which(round(cbrt(te[[x]])-round(cbrt(te[[x]]),0), 10)==0))
 
-pander(cbind(cb.diff, unlist(lapply(cbrts, function(x) paste(x, collapse = ", ")))), row.names = F, col.names=c("c", "ns"), justify="rr")
+pander(cbind(cb.diff, unlist(lapply(cbrts, function(x) paste(x, collapse = ", ")))), row.names = F, col.names=c("c", "ns"), justify="rr") #table of cuberoots in relationship
 
-cbind(table(unlist(cbrts)))
+cbind(table(unlist(cbrts))) #numbers of appearances of each
 
 te=list()
 l=1
@@ -34,6 +34,16 @@ te=do.call("rbind", te)
 
 par(pty="m", mar=c(2,2,2,1), mgp=c(1.1, .3, 0))
 plot(te, pch=16, col="dodgerblue4")
+
+x=1:30; y= 3*x^2+2*x+1 # every number
+points(x, y, pch=16, col="red")
+
+a=(1:30); x=c(3*a^2, 3*a^2); y=c(6*a^2 -3*a +1, 6*a^2 +3*a +1) #Japanese points
+points(x, y, pch=16, col="darkmagenta") 
+
+curve(192*x/187, from=0,to=1000, add = T, col="darkgreen", lty=3)
+
+pander(cbind(te, sprintf("%.3f", te[,2]/te[,1])), row.names = F, col.names=c("a", "b", "b/a"), justify="rrr") #roots and ratios
 
 #hexagonal spiral--------
 e=exp(1)
