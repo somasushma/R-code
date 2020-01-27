@@ -41,7 +41,7 @@ curve(1*x, from=0,to=5000, add = T, col="darkgreen", lty=3) #y=x line
 x=1:50; y= 3*x^2+2*x+1 # every number
 points(x, y, pch=16, col="red")
 
-a=(1:50); x=c(3*a^2, 3*a^2); y=c(6*a^2 -3*a +1, 6*a^2 +3*a +1) #Japanese points
+a=(1:50); x=c(3*a^2, 3*a^2); y=c(6*a^2 -3*a +1, 6*a^2 +3*a +1) #Japanese points: lie on single parametric parabola.
 points(x, y, pch=16, col="darkmagenta") 
 
 #ellipse 1.1
@@ -99,6 +99,18 @@ c=(k+1)/2
 a=c+(9*n^2+1)
 b=c-(9*n^2+2)
 
+#curves for ellipse
+library(Ryacas)
+ye=as_r(yac_str("Solve(x^2-x*y+y^2-47*x-26*y+37,y)")) #solve with yacas
+ye=tolower(ye)
+ye=strsplit(ye, "==")
+ye=unlist(lapply(ye, function(x) x[2]))
+ell=function(x) {}
+body(ell)=parse(text = ye[1]) #get curve from above solution
+
+curve(ell, from = (-sqrt(j[1])+k[1])/2, to=(sqrt(j[1])+k[1])/2)
+curve((x+sqrt((x+47)^2-4*(x^2-26*x+37))+47)/2, from = (-sqrt(j[1])+k[1])/2, to=(sqrt(j[1])+k[1])/2, add=T)
+
 #isolate tetrads
 ye=cbrts[which(lengths(cbrts)==4)]
 l=1
@@ -114,30 +126,6 @@ points(tetrad, pch=16, col="orange")
 
 #roots and ratios
 pander(cbind(te, sprintf("%.3f", te[,2]/te[,1])), row.names = F, col.names=c("a", "b", "b/a"), justify="rrr") 
-
-#rmpfr------------
-library(Rmpfr)
-prec=500
-n=8
-apr=function(x) mpfr(x, precBits = prec)
-
-ninecubed=rep(NA, n)
-for (j in 1:n) {
-  ninecubed[j]=formatMpfr(apr(9)*apr(j)^3)
-}
-
-n=10000
-te=rep(NA,n)
-for (j in 1:n) {
-  te[j]=formatMpfr(mpfr(ninecubed[4])^apr(3)+(apr(2866+j))^apr(3))
-}
-
-n=100000
-cube.diff.p=rep(NA, n)
-
-for (j in 1:n) {
-  cube.diff.p[j]=formatMpfr(apr(3)*apr(j+90000)^2+apr(3)*apr(j+90000)+apr(1))
-}
 
 
 #hexagonal spiral--------
