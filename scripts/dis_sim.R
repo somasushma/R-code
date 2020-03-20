@@ -8,7 +8,7 @@ n=40000 #population size; give square number for square plot
 m=25 #number of days
 popbox=vector(mode = "list", length = m+1) #population over time
 a=7 #infective period before recovery
-d=.01 # effective death rate
+d=.005 # effective death rate
 dd=c(rep(1,d*n),rep(0, (n-d*n)))
 dd=sample(x = dd, size = n, replace = F) #death distribution
 days=rep(0,n) #period of infection in integer time units 
@@ -17,7 +17,9 @@ ifct=rep(0,n) #number of transmissions
 fst=sample(x=c(1:n),size = 1,replace = F) #first infected person
 pop[fst]=1
 popbox[[1]]=pop
-p=round(rplcon(n=n, xmin=.2, alpha=2.5)) #power law infection transmisson
+alpha=2.5
+xmin=.2
+p=round(rplcon(n=n, xmin=xmin, alpha=alpha)) #power law infection transmisson
 for (j in 1:m) {
   l=which(pop==1)
   days[l]= days[l]+1
@@ -36,7 +38,7 @@ for (j in 1:m) {
   ii=which(pop==1)
   dyi=sum(sample(x=dd, size = length(ii),replace = F))
   pop[sample(x=ii, size = dyi, replace = F)]=3
-    
+  
   ind=sample(x = 1:n, size = n,replace = F)
   pop=pop[ind]
   days=days[ind]
@@ -55,7 +57,7 @@ windowsFonts(f1 = windowsFont("Constantia"),
 
 #plot progression
 par(mfrow=c(1,1), mar=c(2,2,2,1), mgp=c(1.05,.3,0))
-plot(uninfected, type="o", pch=16, col="brown", main="disease progression", xlab = "time units", ylab = "numbers", family= "f1")
+plot(uninfected, type="o", pch=16, col="brown", main=bquote("Disease prog.: "~eff.death~rate==.(d)~"; power law params"~alpha == .(alpha)~ ","~x[min]==.(xmin)~ ";"~inf.period== .(a)), xlab = "time units", ylab = "numbers", family= "f1")
 points(infected, type="o", pch=16, col="blue")
 points(recovered, type="o", pch=16, col="darkgreen")
 points(dead, type="o", pch=16, col="black")
