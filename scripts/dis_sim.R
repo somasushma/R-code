@@ -53,12 +53,14 @@ windowsFonts(f1 = windowsFont("Constantia"),
              f2 = windowsFont("MS Gothic"),
              f3 = windowsFont("Cambria"))
 
+#plot progression
 par(mfrow=c(1,1), mar=c(2,2,2,1), mgp=c(1.05,.3,0))
 plot(uninfected, type="o", pch=16, col="brown", main="disease progression", xlab = "time units", ylab = "numbers", family= "f1")
 points(infected, type="o", pch=16, col="blue")
 points(recovered, type="o", pch=16, col="darkgreen")
 points(dead, type="o", pch=16, col="black")
 
+#plot population. white uninfected, brown infected, green recovered, black dead.
 te=as.vector(outer(X = c(1:sqrt(n)), Y = c(1:sqrt(n))*1i, FUN = "+"))
 col=c("#f5f5f5", "#a6611a", "#018571", "black")
 par(mfrow=c(5,5))
