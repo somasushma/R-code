@@ -48,5 +48,7 @@ plot(uninfected, type="o", pch=16, col="brown", main="disease progression", xlab
 points(infected, type="o", pch=16, col="blue")
 points(recovered, type="o", pch=16, col="darkgreen")
 
+te=as.vector(outer(X = c(1:100), Y = c(1:100)*1i, FUN = "+"))
+col=c("gray", "red", "cyan")
 par(mfrow=c(5,5))
-lapply(popbox[1:25], function(x) image(matrix(data = x,nrow = 100, ncol = 100), col = rainbow(3), asp=1, axes=F))
+lapply(1:25, function(x)  plot(te, col=col[popbox[[x]]+1], pch=16, asp=1, axes=F, xlab="", ylab="", main=x))
