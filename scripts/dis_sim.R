@@ -1,33 +1,37 @@
 # install.packages("poweRlaw")
 # library("poweRlaw")
 
-n=10000
-m=30
-popbox=vector(mode = "list", length = m+1)
-a=15
-d=.01
-days=rep(0,n)
-pop=rep(0,n)
-fst=sample(x=c(1:n),size = 1,replace = F)
+n=10000 #population size
+m=25 #number of days
+popbox=vector(mode = "list", length = m+1) #population over time
+a=7 #infective period before recovery
+d=.01 #death rate
+days=rep(0,n) #days of infection
+pop=rep(0,n) #population
+ifct=rep(0,n) #number of transmissions
+fst=sample(x=c(1:n),size = 1,replace = F) #first infected person
 pop[fst]=1
 popbox[[1]]=pop
-p=round(rplcon(n=10000, xmin=1, alpha=3.5))
+p=round(rplcon(n=n, xmin=1, alpha=5)) #power law infection transmisson
 for (j in 1:m) {
-  days[which(pop==1)]= days[which(pop==1)]+1
+  l=which(pop==1)
+  days[l]= days[l]+1
   pop[which(days >= a)]=2
-  ifct=sample(x = p,size = 1,replace = F)
+  infcs=sample(x = p,size = length(l),replace = F)
+  ifct[l[which(ifct[l]==0)]]=infcs[which(ifct[l]==0)]
+
+  if(runif(1, min=0, max = 1) <= .5) pos=-1 else pos=1
+  k=unlist(sapply(l, function(x) x+c((sign(pos)*ifct[x]):pos)))
   
-  if(runif(1, min=0, max = 1) <= .5) pos=-1*ifct else pos=1*ifct
-  k=as.vector(sapply(which(pop==1), function(x) x+c((sign(pos)*1):pos)))
-  
- if(length(k)>0){
-  k[which(k>n)]=k[which(k>n)]-n  
-  k[which(k<1)]=k[which(k<1)]+n
-  pop[k[which(pop[k]==0)]]=1
- } 
+  if(length(k)>0){
+    k[which(k>n)]=k[which(k>n)]-n  
+    k[which(k<1)]=k[which(k<1)]+n
+    pop[k[which(pop[k]==0)]]=1
+  } 
   ind=sample(x = 1:n, size = n,replace = F)
   pop=pop[ind]
   days=days[ind]
+  ifct=ifct[ind]
   popbox[[j+1]]=pop
   
 }
@@ -39,7 +43,10 @@ windowsFonts(f1 = windowsFont("Constantia"),
              f2 = windowsFont("MS Gothic"),
              f3 = windowsFont("Cambria"))
 
-par(mar=c(2,2,2,1), mgp=c(1.1,.4,0))
+par(mfrow=c(1,1), mar=c(2,2,2,1), mgp=c(1.1,.4,0))
 plot(uninfected, type="o", pch=16, col="brown", main="disease progression", xlab = "days", ylab = "numbers", family= "f1")
 points(infected, type="o", pch=16, col="blue")
 points(recovered, type="o", pch=16, col="darkgreen")
+
+par(mfrow=c(5,5))
+lapply(popbox[1:25], function(x) image(matrix(data = x,nrow = 100, ncol = 100), col = rainbow(3), asp=1, axes=F))
