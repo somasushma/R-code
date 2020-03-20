@@ -1,0 +1,8 @@
+# get data from: https://www.worldometers.info/coronavirus/ and put in below:
+cat>te
+cat te | awk 'NR % 9 == 1' | sed 's/ //g' > ye
+cat te | awk 'NR % 9 == 2' | sed 's/,//g' > ge
+cat te | awk 'NR % 9 == 4' | sed 's/,//g' > se
+paste ye ge se -d,>covid
+
+
