@@ -12,5 +12,5 @@ paste ye se ge de -d,>covid
 # download: time_series_covid19_deaths_global_narrow.csv as covid19_deaths.csv
 
 # Italy analysis: https://github.com/pcm-dpc/COVID-19/edit/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv
-# Save above as 
+# Save above as italy_data.csv
 
