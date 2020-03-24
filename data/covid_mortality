@@ -1,8 +1,16 @@
 # get data from: https://www.worldometers.info/coronavirus/ and put in below:
 cat>te
 cat te | awk 'NR % 9 == 1' | sed 's/ //g' > ye
-cat te | awk 'NR % 9 == 2' | sed 's/,//g' > ge
-cat te | awk 'NR % 9 == 4' | sed 's/,//g' > se
-paste ye ge se -d,>covid
+cat te | awk 'NR % 9 == 2' | sed 's/,//g' > se
+cat te | awk 'NR % 9 == 4' | sed 's/,//g' > ge
+cat te | awk 'NR % 9 == 0' | sed 's/,//g' > de
+
+paste ye se ge de -d,>covid
+
+# day by day data: https://data.humdata.org/dataset/novel-coronavirus-2019-ncov-cases
+# download: time_series_covid19_deaths_global_narrow.csv as covid19_cases.csv
+# download: time_series_covid19_deaths_global_narrow.csv as covid19_deaths.csv
+
+#Ital analysis: https://github.com/pcm-dpc/COVID-19/edit/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv
 
 
