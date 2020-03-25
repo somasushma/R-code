@@ -1,4 +1,4 @@
-setwd("~/R/Dataexperiments/data/")
+setwd("~/cutting_block/R/data_analysis/data/")
 library("dplyr")
 library("knitr")
 library("tidyr")
@@ -86,7 +86,7 @@ par(mar=c(2,10,2,2))
 barplot(rev(covid$V2), horiz = T, names.arg = rev(covid$V1), col = "darkcyan", las=2, main= "Covid-19 symptoms; n=55924")
 box()
 
-dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.symptoms.png", height=8, width=11, units="in", res=300, )
+dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.symptoms.png", height=8, width=11, units="in", res=300)
 dev.off()
 
 #age
@@ -94,7 +94,7 @@ covid=read.csv(file = "covid.age", header = F)
 par(mar=c(2,4,2,2))
 barplot(rev(covid$V2), horiz = T, names.arg = rev(covid$V1), col = "darkcyan", las=2, main= "Covid-19: by age mortality")
 box()
-dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.age.png", height=8, width=11, units="in", res=300, )
+dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.age.png", height=8, width=11, units="in", res=300)
 dev.off()
 
 #time series cases-----------
@@ -125,7 +125,7 @@ for (j in 1:length(cnt)) {
   
   points(infts, pch=16,type="o", col=col[j])  
   points(infts)
-
+  
 }
 
 legend(x = "topleft", legend = c("China", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
@@ -163,6 +163,7 @@ cov.d.ts[,3]  = as.numeric(as.character(cov.d.ts[,3]))
 cov.d.ts[,4]  = as.numeric(as.character(cov.d.ts[,4]))
 cov.d.ts[,5]  = as.Date(as.character(cov.d.ts[,5]))
 cov.d.ts[,6]  = as.numeric(as.character(cov.d.ts[,6]))
+
 #china
 chin=cov.d.ts[which(cov.d.ts$Country.Region=="China"),]
 chin=chin[-which(chin$Province.State=="Hong Kong"),]
@@ -209,16 +210,16 @@ points(chin[,1], chin[,4])
 cnt=c("US","Korea, South", "Italy","Spain", "France", "United Kingdom", "Germany")
 col=rainbow(length(cnt))
 for (j in 1:length(cnt)) {
-
+  
   te=cov.c.ts[which(cov.c.ts$Country.Region==cnt[j]),]
   te=data.frame(group_by(te,Date) %>% summarize(cases=sum(Value)))
   
   ye=cov.d.ts[which(cov.d.ts$Country.Region==cnt[j]),]
   ye=data.frame(group_by(ye,Date) %>% summarize(cases=sum(Value)))
-infde=merge(x = te, y = ye,by = "Date")
+  infde=merge(x = te, y = ye,by = "Date")
   infde$mortality=infde[,3]/infde[,2]*100
-infde[which(is.nan(infde[,4])),4]=NA
-
+  infde[which(is.nan(infde[,4])),4]=NA
+  
   points(infde$Date, infde$mortality, pch=16,type="o", col=col[j])  
   points(infde$Date, infde$mortality)
   
@@ -228,6 +229,24 @@ legend(x = "topleft", legend = c("China", cnt), col = c("darkred", col[1:length(
 
 tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
 dev.copy(png, file=paste0("~/R/Dataexperiments/Figs/covid19.ts_mort.",tst,".png"), width=8, height=6, res=300, units="in")
+dev.off()
+
+#matrix------------
+cnts=unique(cov.c.ts$Country.Region)
+te=sapply(1:ncol(mat.cov.c), function(x) length(which(mat.cov.c[,x] >0)))
+names(te)=cnts
+cnts=names(sort(te,decreasing = T))
+
+mat.cov.c=sapply(cnts, function(x) (cov.c.ts[which(cov.c.ts$Country.Region==x),] %>% group_by(Date)  %>% summarize(cases=sum(Value)))$cases)
+rownames(mat.cov.c)=format(rev(unique(cov.c.ts$Date)), "%a %b %d %Y")
+
+# install.packages("plot.matrix")
+library('plot.matrix')
+par(mar=c(6,6,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
+plot(asinh(mat.cov.c), key=NULL, col=topo.colors(50), las=2, main=bquote("infection counts in asinh scale till:"~.(format(Sys.time(), "%a %b %d %Y"))), xlab="", ylab="", family="f1", cex.axis=0.5, breaks=50)
+
+tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
+dev.copy(png, file=paste0("~/cutting_block/R/data_analysis/Figures/covid19.matrix.",tst,".png"), width=15, height=10, res=300, units="in")
 dev.off()
 
 #Italy analysis--------
@@ -275,5 +294,5 @@ points(tail(italy.cov$date, -1),y=y)
 abline(v=as.Date("2020-03-09"), col="darkgreen", lwd=2, lty=2)
 
 tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
-dev.copy(png, file=paste0("~/R/Dataexperiments/Figs/italy_mort.",tst,".png"), width=11, height=8, res=300, units="in")
+dev.copy(png, file=paste0("~/cutting_block/R/data_analysis/Figures/italy_mort.",tst,".png"), width=11, height=8, res=300, units="in")
 dev.off()
