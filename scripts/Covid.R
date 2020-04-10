@@ -184,7 +184,7 @@ for (j in 1:length(cnt)) {
   
 }
 
-legend(x = "bottomright", legend = c("China", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
+legend(x = "bottomright", legend = c("USA", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
 
 
 tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
