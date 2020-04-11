@@ -88,7 +88,7 @@ par(mar=c(2,10,2,2))
 barplot(rev(covid$V2), horiz = T, names.arg = rev(covid$V1), col = "darkcyan", las=2, main= "Covid-19 symptoms; n=55924")
 box()
 
-dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.symptoms.png", height=8, width=11, units="in", res=300, )
+dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.symptoms.png", height=8, width=11, units="in", res=300)
 dev.off()
 
 #age
@@ -96,7 +96,7 @@ covid=read.csv(file = "covid.age", header = F)
 par(mar=c(2,4,2,2))
 barplot(rev(covid$V2), horiz = T, names.arg = rev(covid$V1), col = "darkcyan", las=2, main= "Covid-19: by age mortality")
 box()
-dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.age.png", height=8, width=11, units="in", res=300, )
+dev.copy(png, file="~/R/Dataexperiments/Figs/covid19.age.png", height=8, width=11, units="in", res=300)
 dev.off()
 
 #time series cases-----------
@@ -126,7 +126,7 @@ for (j in 1:length(cnt)) {
   
   points(infts, pch=16,type="o", col=col[j])  
   points(infts)
-
+  
 }
 
 legend(x = "bottomright", legend = c("USA", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
@@ -136,7 +136,33 @@ tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
 dev.copy(png, file=paste0("~/R/Dataexperiments/Figs/covid19.ts.",tst,".png"), width=8, height=5, res=300, units="in")
 dev.off()
 
-#derivative of above
+#cases since 50th case--------
+usa=cov.c.ts[which(cov.c.ts$Country.Region=="US"),]
+usa=data.frame(group_by(usa,Date) %>% summarize(cases=sum(Value)))
+n=35
+ye=usa$cases[which(usa$cases>=n)]
+par(mar=c(2,2,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
+plot(ye, pch=16,type="o", log="y", ylim=c(n, max(ye)), col="darkred", main=bquote("daily COVID-19 progression after"~.(n)~"cases till:"~.(format(Sys.time(), "%a %b %d %Y"))), xlab = "date", ylab = "infections", family= "f1")
+points(ye)
+
+cnt=c("Korea, South", "Italy","Spain", "France", "United Kingdom", "Germany", "India")
+col=rainbow(length(cnt))
+for (j in 1:length(cnt)) {
+  infts=cov.c.ts[which(cov.c.ts$Country.Region==cnt[j]),]
+  infts=data.frame(group_by(infts,Date) %>% summarize(cases=sum(Value)))
+  ye=infts$cases[which(infts$cases>=n)]
+  points(ye, pch=16,type="o", col=col[j])  
+  points(ye)
+  
+}
+
+legend(x = "bottomright", legend = c("USA", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
+
+tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
+dev.copy(png, file=paste0("covid19.50plusc",tst,".png"), width=8, height=5, res=300, units="in")
+dev.off()
+
+#derivative of above--------
 y=sapply(1:(length(usa$cases)-1), function(x) usa$cases[x+1]-usa$cases[x])
 
 par(mar=c(2,2,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
@@ -154,6 +180,31 @@ for (j in 1:length(cnt)) {
 }
 
 legend(x = "topleft", legend = c("USA", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
+
+#rate after 50; averaged over 3 days--------
+usa=cov.c.ts[which(cov.c.ts$Country.Region=="US"),]
+usa=data.frame(group_by(usa,Date) %>% summarize(cases=sum(Value)))
+n=30
+ye=usa[which(usa$cases>=n),2]
+y=sapply(1:(length(ye)-2), function(x) mean(c(ye[x], ye[x+1], ye[x+2])))
+
+par(mar=c(2,2,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
+plot(y, pch=16,type="o", col="darkred", log="y", ylim=c(n, max(y)), main=bquote("COVID-19 3-day average infection rate till:"~.(format(Sys.time(), "%a %b %d %Y"))), xlab = "date", ylab = bquote("infection rate after cases="~.(n)), family= "f1")
+points(y)
+
+cnt=c("Korea, South", "Italy","Spain", "France", "United Kingdom", "Germany", "India")
+col=rainbow(length(cnt))
+for (j in 1:length(cnt)) {
+  infts=cov.c.ts[which(cov.c.ts$Country.Region==cnt[j]),]
+  infts=data.frame(group_by(infts,Date) %>% summarize(cases=sum(Value)))
+  ye=infts$cases[which(infts$cases>=n)]
+  y=sapply(1:(length(ye)-2), function(x) mean(c(ye[x], ye[x+1], ye[x+2])))
+  points(y, pch=16,type="o", col=col[j])  
+  points(y)
+}
+
+legend(x = "bottomright", legend = c("USA", cnt), col = c("darkred", col[1:length(cnt)]), pch = 16, lty = 1)
+
 
 #time series deaths-----------
 cov.d.ts=read.csv(file = "covid19_deaths.csv", header = T)
@@ -210,16 +261,16 @@ points(chin[,1], chin[,4])
 cnt=c("US","Korea, South", "Italy","Spain", "France", "United Kingdom", "Germany")
 col=rainbow(length(cnt))
 for (j in 1:length(cnt)) {
-
+  
   te=cov.c.ts[which(cov.c.ts$Country.Region==cnt[j]),]
   te=data.frame(group_by(te,Date) %>% summarize(cases=sum(Value)))
   
   ye=cov.d.ts[which(cov.d.ts$Country.Region==cnt[j]),]
   ye=data.frame(group_by(ye,Date) %>% summarize(cases=sum(Value)))
-infde=merge(x = te, y = ye,by = "Date")
+  infde=merge(x = te, y = ye,by = "Date")
   infde$mortality=infde[,3]/infde[,2]*100
-infde[which(is.nan(infde[,4])),4]=NA
-
+  infde[which(is.nan(infde[,4])),4]=NA
+  
   points(infde$Date, infde$mortality, pch=16,type="o", col=col[j])  
   points(infde$Date, infde$mortality)
   
@@ -282,7 +333,7 @@ dev.off()
 
 #exponential growth---------------
 f <- function(x0,n,r) {
-if(n==0) return(x0)
+  if(n==0) return(x0)
   else{
     j=1
     x=x0
@@ -309,7 +360,7 @@ pop=sample(pop)
 n=2000
 xbox=rep(0, n)
 for (j in 1:n) {
- xbox[j] = sum(sample(pop, size = 1000,replace = F))
+  xbox[j] = sum(sample(pop, size = 1000,replace = F))
 }
 length(which(xbox>0))/n
 mean(xbox)
