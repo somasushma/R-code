@@ -330,6 +330,23 @@ tst=gsub(x=format(Sys.time(), "%a %b %d %Y"),pattern = " ", replacement = ".")
 dev.copy(png, file=paste0("~/R/Dataexperiments/Figs/italy_mort.",tst,".png"), width=11, height=8, res=300, units="in")
 dev.off()
 
+#pneumonia-like deaths
+library(readr)
+pneu.week= read_csv("USA_pneumonia_Deaths.csv", 
+                                 col_types = cols(Number = col_skip(), 
+                                                  X8 = col_skip(), Year.Week = col_character()))
+pneu.week= data.frame(pneu.week)
+par(mar=c(5,2,2,1), mgp=c(1.1,.4,0))
+plot(pneu.week$Pneumonia/pneu.week$Total.Deaths, type="h", lwd=3, axes=F, main="Weekly pneumonia-like disease deaths 2019-2020 in USA", xlab="", ylab="fraction of total deaths",  family= "f1")
+axis(side=1, at=1:length(pneu.week$Total.Deaths), labels = pneu.week$Year.Week, las=2)
+axis(side=2)
+points(pneu.week$Baseline/100, type="l", col="red", lty=2, lwd=2)
+box()
+legend("topleft",legend = "baseline", col="red", lty=2, lwd=2)
+
+dev.copy(png, file="~/cutting_block/R/data_analysis/Figures/pneumonia_deaths", height= 5, width=7.5, units="in", res=300)
+dev.off()
+
 
 #exponential growth---------------
 f <- function(x0,n,r) {
