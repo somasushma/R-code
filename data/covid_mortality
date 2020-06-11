@@ -1,10 +1,12 @@
 # get data from: https://www.worldometers.info/coronavirus/ and put in below:
 cat>te
-cat te | awk 'NR % 12 == 1' | sed 's/ //g' > ye
-cat te | awk 'NR % 12 == 2' | sed 's/,//g' > se
-cat te | awk 'NR % 12 == 4' | sed 's/,//g' > ge
-cat te | awk 'NR % 12 == 9' | sed 's/,//g' > de
-cat te | awk 'NR % 12 == 10' | sed 's/,//g' > be
+cat te | awk 'NR % 14 == 2' | sed 's/ //g' >ye
+cat te | awk 'NR % 14 == 3' | sed 's/,//g' >se
+cat te | awk 'NR % 14 == 5' | sed 's/,//g' >ge
+cat te | awk 'NR % 14 == 10' | sed 's/,//g' >be
+cat te | awk 'NR % 14 == 11' | sed 's/,//g' >de
+paste ye se ge be de -d, >covid
+
 
 paste ye se ge de be -d, >covid
 
