@@ -11,7 +11,7 @@ paste ye se ge be de -d, >covid
 paste ye se ge de be -d, >covid
 
 # day by day data: https://data.humdata.org/dataset/novel-coronavirus-2019-ncov-cases
-# download: time_series_covid19_deaths_global_narrow.csv as covid19_cases.csv
+# download: time_series_covid19_confirmed_global_narrow.csv as covid19_cases.csv
 # download: time_series_covid19_deaths_global_narrow.csv as covid19_deaths.csv
 
 # Italy analysis: https://github.com/pcm-dpc/COVID-19/edit/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv
