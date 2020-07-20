@@ -1,19 +1,37 @@
-fx=function(x) a*x+(2*(1-a)*x^2)/(1+x^2)
-a=cos(2*2*pi/9)-.01
-b=.9998
-n=20000
-x=12
-y=7.7
-xbox=rep(NA, n)
-ybox=rep(NA, n)
-j=1
-while (j <= n) {
-  xbox[j]=x
-  ybox[j]=y
-  j=j+1
-  x=b*y+fx(x)
-  y=-xbox[j-1]+fx(x)
-}
+library(readr)
 
-par(pty="s", mar=c(2,2,1,1), mgp=c(1,.35,0))
-plot(x=xbox, y=ybox, pch=16, cex=.25, col=sapply(1:(n/1000), function(x) rep(rainbow(n/1000)[x],1000)), xlab="x",ylab= "y", main=paste("Mira", " a=", a, ", b=" , b, ", x0=" , xbox[1], ", y0=", ybox[1]), asp=1)
+windowsFonts(f1 = windowsFont("Constantia"),
+             f2 = windowsFont("Book Antiqua"),
+             f3 = windowsFont("Cambria Math"))
+
+Mira <- read_delim("R/Dataexperiments/data/astronomy/Mira.tsv", 
+                   "\t", escape_double = FALSE, trim_ws = TRUE)
+Mira = data.frame(Mira)
+
+par(mar=c(2,2,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
+hist(Mira$Period, breaks = 30, col = gray.colors(31), main= "Mira periods", xlab = "Mira periods", family="f3")
+grid(col="gray30")
+abline(v=c(mean(Mira$Period), median(Mira$Period)), col=c("darkgreen", "darkred"), lwd=2, lty=3)
+box()
+
+Mira$magDiff = Mira$magMin - Mira$magMax
+
+par(mar=c(2,2,2,1), mgp=c(1.1,.4,0), mfrow=c(1,1))
+hist(Mira$magDiff, breaks = 30, col = gray.colors(31), main= "Mira magnitude amplitudes", xlab = "Mira magnitude amplitudes", family="f3")
+grid(col="gray30")
+box()
+
+#convert to galactic
+a0=192.8595*pi/180
+d0=27.1284*pi/180
+l0=122.9320*pi/180
+galc=function(a,d){
+a=a*pi/180
+d=d*pi/180
+x=(cos(d)*sin(a-a0))/(sin(d)*cos(d0)-cos(d)*sin(d0)*cos(a-a0))
+l=l0-atan(x)
+
+y=sin(d)*sin(d0)+cos(d)*cos(d0)*cos(a-a0)
+b=asin(y)
+return(cbind(l*180/pi, b*180/pi))
+}
