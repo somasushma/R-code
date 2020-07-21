@@ -35,3 +35,22 @@ y=sin(d)*sin(d0)+cos(d)*cos(d0)*cos(a-a0)
 b=asin(y)
 return(cbind(l*180/pi, b*180/pi))
 }
+
+#Hammer-Aitoff projection
+ham.ait=function(l,b){
+  if(l>180) l=l-360
+  x=sqrt(8)*cos(l*pi/180)*sin(b*pi/360)/sqrt(1+cos(l*pi/180)*cos(b*pi/360))
+  y=sqrt(2)*sin(l*pi/180)/sqrt(1+cos(l*pi/180)*cos(b*pi/360))
+  return(cbind(x,y))
+}
+
+ham.ait=function(l,b){
+  l[which(l>180)] = l[which(l>180)]-360
+  x=sqrt(8)*cos(b*pi/180)*sin(l*pi/360)/sqrt(1+cos(b*pi/180)*cos(l*pi/360))
+  y=sqrt(2)*sin(b*pi/180)/sqrt(1+cos(b*pi/180)*cos(l*pi/360))
+  return(cbind(x,y))
+}
+
+#boundary
+bdx=c(rep(180.0001,90), rep(180,90))
+bdy=c(seq(-90,90,length.out = 90), seq(-90,90,length.out = 90))
