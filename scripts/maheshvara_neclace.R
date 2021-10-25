@@ -18,20 +18,31 @@ fs=lapply(fs, format)
 te=log(unlist(lapply(fs, function(x) max(as.numeric(x)))))
 plot(te, pch=16 )
 abline(a = log(7), b=2)
+
 #reading big list of above
 library(readr)
-maheshvara_pearls <- read_csv("~/cutting_block/R/figures/maheshvara_pearls.csv", 
-                              col_names = FALSE)
-te=log(as.vector(maheshvara_pearls$X2))
-plot(te, pch=16 )
-abline(a = 0, b=2.2)
-abline(a = 0, b=1/2.3)
+maheshvara_pearls <- read_csv("R/Figures/Figures1/maheshvara_pearls.csv", 
+                              col_names = FALSE, col_types = cols(X1 = col_integer(), 
+                                                                  X2 = col_character()))
+
+te=as.bigz(maheshvara_pearls$X2)[2:313]                              
+ye=pow.bigz(10,(1:312))+1
+ge=log10.bigz(te)/log10.bigz(ye)
+
+par(mar=c(2,2,2,1), mgp=c(1,.3,0))
+plot(x=log10.bigz(ye), y=log10.bigz(te), pch=16, col="chartreuse4",  xlab = "log10(f[n])", ylab = "log10(pmax)", main="greatest factor of f[n] vs f[n]")
+abline(a = 0, b=max(ge), col="coral3", lty=2, lwd=1.25)
+abline(a = 0, b=min(ge), col="coral3", lty=2, lwd=1.25)
+abline(a = 0, b=median(ge), col="darkblue", lty=2, lwd=1.25)
+
+lines(x=log10.bigz(ye), y=log10.bigz(te), col="cornflowerblue")
+
 
 #table of frequencies
 te=sort(table(unlist(fs)), decreasing = T)
 knitr::kable(te,format = "pandoc")
 
-which(unlist(lapply(1:n, function(x) "1058313049" %in% fs[[x]])))
+which(unlist(lapply(1:n, function(x) "1409" %in% fs[[x]])))
 
 forlist=list()
 forlist$`11`=function(x) 2*x+1
@@ -74,9 +85,12 @@ for(j in 1:length(forlist)){
   te=unlist(strsplit(te, "\\*|\\+"))
   te=as.numeric(te[2])
   f=forlist[[j]]
-  ind.list[[j]]=f(0:floor(50/te))
+  #[[j]]=f(0:floor(50/te)) # till 50
+  ind.list[[j]]=f(0:3) #4 terms
+  
 }
 names(ind.list)=names(forlist)
+lapply(ind.list, function(x) print(paste(x, collapse = ", ")))
 
 #factor network--------------
 l=lengths(fs)
@@ -115,6 +129,6 @@ plot.igraph(g, layout=norm_coords(layout_components(g,layout = layout_with_fr),x
 
 #separating families
 fams= components(g)
-te=names(fams$membership[fams$membership==3])
+te=names(fams$membership[fams$membership==6])
 ye=unique(unlist(fs))
 ge=ye[ye %in% te]

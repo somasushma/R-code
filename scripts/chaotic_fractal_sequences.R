@@ -51,7 +51,7 @@ points(2^(0:10), f2[2^(0:10)], col="darkgreen", pch=16)
 points(which(f2==1), f2[which(f2==1)], col="darkblue", pch=16)
 
 #f3 
-n=1030
+n=1000
 f3=rep(NA,n)
 f3[1]=1
 f3[2]=1
@@ -67,5 +67,5 @@ par(pty="m", mar=c(2,2,2,1), mgp=c(1.1, .3, 0))
 plot(f3, type = "l", main=bquote("chaotic sequence"~f[3]), col="darkblue", lwd=1.5)
 
 #successive record values
-te=unique(unlist(sapply(1:n, function(x) which(f3[1:x]==min(f3[1:x])))))
+te=unique(unlist(sapply(1:n, function(x) which(f3[1:x]==max(f3[1:x])))))
 cbind(te, f3[te])
